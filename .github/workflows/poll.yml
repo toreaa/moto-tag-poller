@@ -1,0 +1,41 @@
+name: poll-moto-tag
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # hvert 15. min (GitHub kan forsinke)
+  workflow_dispatch: {}       # manuell kjoering
+
+concurrency:
+  group: poll
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Restore secrets.json
+        run: |
+          mkdir -p Auth
+          printf '%s' "$GFMT_SECRETS" > Auth/secrets.json
+        env:
+          GFMT_SECRETS: ${{ secrets.GFMT_SECRETS }}
+      - name: Poll and post
+        env:
+          POST_URL: ${{ secrets.POST_URL }}
+          SHARE_SECRET: ${{ secrets.SHARE_SECRET }}
+          MOTO_CANONIC_ID: ${{ secrets.MOTO_CANONIC_ID }}
+          LOC_TIMEOUT: '150'
+        run: |
+          set +e
+          python poll_and_post.py
+          code=$?
+          if [ $code -eq 2 ]; then echo "Ingen posisjon denne runden (taggen ikke sett av nettverket)"; exit 0; fi
+          exit $code
