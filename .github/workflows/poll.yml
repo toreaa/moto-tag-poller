@@ -2,7 +2,7 @@ name: poll-moto-tag
 
 on:
   schedule:
-    - cron: '*/5 * * * *'   # hvert 15. min (GitHub kan forsinke)
+    - cron: '*/5 * * * *'   # hvert 5. min (krever offentlig repo for fri Actions-kvote; GitHub-cron kan bli forsinket/droppet)
   workflow_dispatch: {}       # manuell kjoering
 
 concurrency:
