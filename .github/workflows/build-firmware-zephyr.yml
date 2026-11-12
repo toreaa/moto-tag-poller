@@ -9,19 +9,22 @@ on:
       - ZephyrFirmware/**
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   build-firmware-zephyr:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
     - name: Install cmake
       run: sudo apt update && sudo apt install -y cmake
 
     - name: Setup Zephyr project
-      uses: zephyrproject-rtos/action-zephyr-setup@v1
+      uses: zephyrproject-rtos/action-zephyr-setup@cc223fe61661d8573c1cd3f95f72f90cce729ae9 # v1
       with:
           base-path: ZephyrFirmware
           app-path: app
